@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not Hesaplama Sistemi</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-container">
+        <h4 class="text-center mb-4">Vize - Final Hesaplama</h4>
+        <form id="notFormu">
+            <div class="mb-3">
+                <label for="vize" class="form-label">Vize Notu (%40)</label>
+                <input type="number" class="form-control" id="vize" required min="0" max="100">
+            </div>
+            <div class="mb-3">
+                <label for="final" class="form-label">Final Notu (%60)</label>
+                <input type="number" class="form-control" id="final" required min="0" max="100">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Sonucu Hesapla</button>
+        </form>
+    </div>
+
+    <script>
+        // REFACTORING: Hesaplama işlemini form olayından ayırarak ayrı ve temiz bir fonksiyona aldık.
+        // Bu fonksiyon sadece not hesaplama işinden sorumludur (Single Responsibility).
+        function ortalamaHesapla(vize, final) {
+            return (vize * 0.4) + (final * 0.6);
+        }
+
+        // Form post edildiğinde (gönderildiğinde) çalışacak senaryo
+        document.getElementById('notFormu').addEventListener('submit', function (event) {
+            event.preventDefault(); // Formun sayfayı yenilemesini engelliyoruz
+
+            // 1. Formdaki verileri alıyoruz
+            let vizeNotu = parseFloat(document.getElementById('vize').value);
+            let finalNotu = parseFloat(document.getElementById('final').value);
+
+            // 2. Verileri hesaplama fonksiyonuna gönderip sonucu üretiyoruz
+            let ortalama = ortalamaHesapla(vizeNotu, finalNotu);
+
+            // 3. Geçme kalma durumuna göre alert parametrelerini ayarlıyoruz
+            let durumMesaji = ortalama >= 50 ? "Tebrikler, Geçtiniz!" : "Maalesef, Kaldınız.";
+            let alertIkonu = ortalama >= 50 ? "success" : "error";
+
+            // 4. SweetAlert ile sonucu ekranda gösteriyoruz
+            Swal.fire({
+                title: durumMesaji,
+                html: `Dönem Ortalamanız: <b>${ortalama.toFixed(2)}</b>`,
+                icon: alertIkonu,
+                confirmButtonText: 'Tamam'
+            });
+        });
+    </script>
+</body>
+
+</html>
